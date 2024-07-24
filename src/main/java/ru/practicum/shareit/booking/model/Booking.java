@@ -38,7 +38,7 @@ public class Booking {
     @Column(name = "start_date")
     private LocalDateTime start;
 
-    @Column(name="end_date")
+    @Column(name = "end_date")
     private LocalDateTime end;
 
     @ManyToOne

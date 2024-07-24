@@ -128,13 +128,14 @@ public class BookingService {
 
     public Map<Long, BookingShort> getLastBooking(List<Long> itemsId) {
         List<BookingShort> bookings = repository.getLastBookings(itemsId, Status.APPROVED, LocalDateTime.now());
-        return bookings.stream().
-                collect(Collectors.toMap(BookingShort::getItemId, Function.identity()));
+        return bookings.stream()
+                .collect(Collectors.toMap(BookingShort::getItemId, Function.identity()));
     }
 
     public Map<Long, BookingShort> getNextBooking(List<Long> itemsId) {
         List<BookingShort> bookings = repository.findFirstByItemIdInAndStatusAndStartAfterOrderByStart(itemsId, Status.APPROVED, LocalDateTime.now());
-        return bookings.stream().collect(Collectors.toMap(BookingShort::getItemId, Function.identity()));
+        return bookings.stream()
+                .collect(Collectors.toMap(BookingShort::getItemId, Function.identity()));
     }
 
     private void isEndAfterStart(LocalDateTime start, LocalDateTime end) {
