@@ -92,6 +92,7 @@ public class ItemService {
             throw new BadOperationException("Комментарий можно оставлять только пользователями, бравшими вещь в аренду");
         } else {
             comment.setCreated(LocalDateTime.now());
+            log.debug("Добавлен комментарий для вещи с id {}, пользователем с id {}", itemId, userId);
             commentRepository.save(comment);
         }
         return comment;
