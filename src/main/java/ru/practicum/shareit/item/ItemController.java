@@ -92,7 +92,7 @@ public class ItemController {
         List<CommentGetDto> itemComments = commentsToDto(comments);
 
         ItemGetDto dto;
-        if (item.getOwner().equals(userId)) {
+        if (item.getOwner().getId().equals(userId)) {
             Map<Long, BookingShort> lastBookings = bookingService.getLastBooking(new ArrayList<>(List.of(item.getId())));
             Map<Long, BookingShort> nextBookings = bookingService.getNextBooking(new ArrayList<>(List.of(item.getId())));
             dto = itemMapping.toGetDto(item, lastBookings.get(item.getId()), nextBookings.get(item.getId()), itemComments);
@@ -126,18 +126,18 @@ public class ItemController {
     }
 
     private CommentGetDto commentToDto(Comment comment) {
-        UserShort user = itemService.getUserShorts(List.of(comment.getAuthorId())).get(0);
+        UserShort user = itemService.getUserShorts(List.of(comment.getAuthor().getId())).get(0);
         return commentMapping.toDto(comment, user.getName());
     }
 
     private List<CommentGetDto> commentsToDto(List<Comment> comments) {
-        List<Long> usersId = comments.stream().map(Comment::getAuthorId).collect(Collectors.toList());
+        List<Long> usersId = comments.stream().map(c -> c.getAuthor().getId()).collect(Collectors.toList());
         List<UserShort> users = itemService.getUserShorts(usersId);
 
         List<CommentGetDto> itemComments = comments.stream()
                 .map(comment -> {
                     UserShort user = users.stream()
-                            .filter(u -> u.getId().equals(comment.getAuthorId()))
+                            .filter(u -> u.getId().equals(comment.getAuthor().getId()))
                             .findFirst().orElseThrow();
                     return commentMapping.toDto(comment, user.getName());
                 })

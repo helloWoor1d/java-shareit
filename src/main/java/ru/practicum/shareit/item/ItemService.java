@@ -47,19 +47,20 @@ public class ItemService {
     public List<Item> getUserItems(long userId) {
         userService.getUser(userId);
         log.debug("Получен список вещей пользователя с id {}", userId);
-        return itemRepository.findAllByOwner(userId);
+        return itemRepository.findAllByOwnerId(userId);
     }
 
     public Item createItem(Item item) {
-        userService.getUser(item.getOwner());
+        userService.getUser(item.getOwner().getId());
         log.debug("Добавлена вещь с id {} пользователем с id {}", item.getId(), item.getOwner());
         return itemRepository.save(item);
     }
 
     public Item updateItem(Item item) {
-        if (item.getOwner() != null) userService.getUser(item.getOwner());
+        if (item.getOwner() != null) userService.getUser(item.getOwner().getId());
 
-        Item savedItem = itemRepository.findByIdAndOwner(item.getId(), item.getOwner());
+        Item savedItem = itemRepository.findByIdAndOwnerId(item.getId(), item.getOwner().getId())
+                .orElseThrow(() -> new NotFoundException("Пользователь с id " + item.getId() + " не найден"));
         if (item.getName() == null) {
             item.setName(savedItem.getName());
         }
