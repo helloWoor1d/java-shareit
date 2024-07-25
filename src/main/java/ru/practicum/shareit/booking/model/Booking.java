@@ -44,10 +44,12 @@ public class Booking {
 
     @ManyToOne
     @JoinColumn(name = "item_id")
+    @ToString.Exclude
     private Item item;
 
     @ManyToOne
     @JoinColumn(name = "booker_id")
+    @ToString.Exclude
     private User booker;
 
     @Enumerated(EnumType.STRING)

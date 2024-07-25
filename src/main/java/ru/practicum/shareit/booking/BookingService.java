@@ -1,8 +1,8 @@
 package ru.practicum.shareit.booking;
 
 import jakarta.validation.ValidationException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingShort;
@@ -24,17 +24,11 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class BookingService {
     private final BookingRepository repository;
     private final ItemService itemService;
     private final UserService userService;
-
-    public BookingService(@Autowired BookingRepository repository, @Autowired ItemService itemService,
-                          @Autowired UserService userService) {
-        this.repository = repository;
-        this.itemService = itemService;
-        this.userService = userService;
-    }
 
     public Booking saveBooking(Booking booking) {
         userService.getUser(booking.getBooker().getId());
@@ -42,7 +36,7 @@ public class BookingService {
 
         if (!item.getAvailable()) throw new BadOperationException("Вещь недоступна для аренды");
         isEndAfterStart(booking.getStart(), booking.getEnd());
-        if (booking.getBooker().getId().equals(booking.getItem().getOwner())) {
+        if (booking.getBooker().getId().equals(booking.getItem().getOwner().getId())) {
             throw new NotFoundException("Владелец не может брать в аренду свою вещь");
         }
         repository.save(booking);
@@ -54,7 +48,7 @@ public class BookingService {
         Booking booking = repository.findById(bookingId).orElseThrow(
                 () -> new NotFoundException("Бронирование с id " + bookingId + " не найдено")
         );
-        if (booking.getItem().getOwner().equals(userId)) {
+        if (booking.getItem().getOwner().getId().equals(userId)) {
             if (!booking.getStatus().equals(Status.WAITING)) throw new BadOperationException("Нельзя изменить статус уже подтвержденного бронирования");
             if (approved.equals(true)) {
                 booking.setStatus(Status.APPROVED);
@@ -74,7 +68,7 @@ public class BookingService {
         Booking booking = repository.findById(bookingId).orElseThrow(
                 () -> new NotFoundException("Бронирование с id " + bookingId + " не найдено")
         );
-        if (booking.getBooker().getId().equals(userId) || booking.getItem().getOwner().equals(userId)) {
+        if (booking.getBooker().getId().equals(userId) || booking.getItem().getOwner().getId().equals(userId)) {
             log.debug("Получена информация о бронировании с id {} ", bookingId);
             return booking;
         } else {
