@@ -39,8 +39,8 @@ public class BookingService {
         if (booking.getBooker().getId().equals(booking.getItem().getOwner().getId())) {
             throw new NotFoundException("Владелец не может брать в аренду свою вещь");
         }
-        repository.save(booking);
-        log.debug("Арендована вещь с id {}, пользователем с id {}", booking.getId(), booking.getBooker());
+        Booking created = repository.save(booking);
+        log.debug("Арендована вещь с id {}, пользователем с id {}", created.getId(), created.getBooker());
         return booking;
     }
 
@@ -57,7 +57,7 @@ public class BookingService {
             }
             repository.save(booking);
         } else {
-            throw new NotFoundException("Статус бронирования может изменяться только владельцем вещи!");
+            throw new BadOperationException("Статус бронирования может изменяться только владельцем вещи!");
         }
         log.debug("Статус бронирования вещи с id {}, изменен на {} ", bookingId, approved);
         return booking;

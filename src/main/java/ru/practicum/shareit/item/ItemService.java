@@ -1,8 +1,8 @@
 package ru.practicum.shareit.item;
 
 import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.comment.model.Comment;
@@ -12,28 +12,25 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.ItemShort;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.ItemRequestService;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.UserShort;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class ItemService {
     private final UserService userService;
+    private final ItemRequestService itemRequestService;
     private final ItemRepository itemRepository;
     private final CommentRepository commentRepository;
     private final EntityManager entityManager;
-
-    public ItemService(@Autowired UserService userService, @Autowired ItemRepository itemRepository,
-                       @Autowired EntityManager entityManager, @Autowired CommentRepository commentRepository) {
-        this.userService = userService;
-        this.itemRepository = itemRepository;
-        this.commentRepository = commentRepository;
-        this.entityManager = entityManager;
-    }
 
     public Item getItem(long itemId, long userId) {
         userService.getUser(userId);
@@ -52,8 +49,11 @@ public class ItemService {
 
     public Item createItem(Item item) {
         userService.getUser(item.getOwner().getId());
-        log.debug("Добавлена вещь с id {} пользователем с id {}", item.getId(), item.getOwner());
-        return itemRepository.save(item);
+        if (item.getRequest() != null) itemRequestService.getRequest(item.getRequest().getId(), item.getOwner().getId());
+
+        Item created = itemRepository.save(item);
+        log.debug("Добавлена вещь с id {} пользователем {}", created.getId(), item.getOwner());
+        return created;
     }
 
     public Item updateItem(Item item) {
@@ -90,13 +90,12 @@ public class ItemService {
     public Comment addComment(Comment comment, Long userId, Long itemId) {
         List<Booking> userItemBookings = getPastItemBookings(userId, itemId);
         if (userItemBookings.isEmpty()) {
-            throw new BadOperationException("Комментарий можно оставлять только пользователями, бравшими вещь в аренду");
-        } else {
-            comment.setCreated(LocalDateTime.now());
-            log.debug("Добавлен комментарий для вещи с id {}, пользователем с id {}", itemId, userId);
-            commentRepository.save(comment);
+            throw new BadOperationException("Комментарии могут оставлять только пользователи, бравшие вещь в аренду");
         }
-        return comment;
+        comment.setCreated(LocalDateTime.now());
+        Comment createdComment = commentRepository.save(comment);
+        log.debug("Добавлен комментарий для вещи с id {}, пользователем с id {}", itemId, userId);
+        return createdComment;
     }
 
     public List<Comment> getItemComments(List<Long> itemId) {
@@ -115,6 +114,13 @@ public class ItemService {
 
     public List<ItemShort> getShortItemsByIds(List<Long> itemIds) {
         return itemRepository.findAllByIdIn(itemIds);
+    }
+
+    public Map<Long, List<Item>> getItemsByRequestId(List<Long> requestId) {
+        log.debug("Получен список вещей, созданных по запросам с id {}", requestId);
+        List<Item> items = itemRepository.findAllByRequestIdIn(requestId);
+        return items.stream()
+                .collect(Collectors.groupingBy(item -> item.getRequest().getId()));
     }
 
     public Item getItemReference(Long itemId) {

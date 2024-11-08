@@ -21,6 +21,7 @@ import ru.practicum.shareit.comment.dto.CommentGetDto;
 import ru.practicum.shareit.comment.dto.CommentMapping;
 import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemForRequestDto;
 import ru.practicum.shareit.item.dto.ItemGetDto;
 import ru.practicum.shareit.item.dto.ItemMapping;
 import ru.practicum.shareit.item.model.Item;
@@ -85,6 +86,15 @@ public class ItemController {
                                                     @Valid @RequestBody CommentCreateDto commentDto) {
         Comment comment = itemService.addComment(commentMapping.fromDto(commentDto, userId, itemId), userId, itemId);
         return ResponseEntity.ok(commentToDto(comment));
+    }
+
+    public Map<Long, List<ItemForRequestDto>> getItemsByRequestId(@RequestBody List<Long> requestIds) {
+        Map<Long, List<Item>> map = itemService.getItemsByRequestId(requestIds);
+        return map.entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        e -> e.getValue().stream().map(itemMapping::toRequestDto).collect(Collectors.toList())
+                ));
     }
 
     private ItemGetDto itemToDto(Item item, Long userId) {
