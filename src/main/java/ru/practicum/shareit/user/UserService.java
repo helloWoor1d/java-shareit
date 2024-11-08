@@ -1,8 +1,8 @@
 package ru.practicum.shareit.user;
 
 import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.model.User;
@@ -13,14 +13,10 @@ import java.util.List;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository repository;
     private final EntityManager entityManager;
-
-    public UserService(@Autowired UserRepository userRepository, @Autowired EntityManager entityManager) {
-        this.repository = userRepository;
-        this.entityManager = entityManager;
-    }
 
     public User getUser(long userId) {
         User user = repository.findById(userId, User.class).orElseThrow(
@@ -36,8 +32,9 @@ public class UserService {
     }
 
     public User createUser(User user) {
-        log.debug("Создан пользователь с id {}", user.getId());
-        return repository.save(user);
+        User created = repository.save(user);
+        log.debug("Создан пользователь с id {}", created.getId());
+        return created;
     }
 
     public User updateUser(User user) {

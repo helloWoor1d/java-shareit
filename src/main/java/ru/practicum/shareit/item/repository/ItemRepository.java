@@ -9,6 +9,7 @@ import ru.practicum.shareit.item.model.ItemShort;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -33,4 +34,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             " and b.item.id = ?2" +
             " and b.end < ?3")
     List<Booking> getUserItemBookings(Long userId, Long itemId, LocalDateTime end);
+
+    List<Item> findAllByRequestIdIn(List<Long> requestId);
 }
