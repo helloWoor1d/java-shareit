@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  gateway:
+    container_name: shareit-gateway
+    build: gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - server
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+      - WEB_PORT=8080
+      - SERVER_URL=http://server:9090
+
+  server:
+    container_name: shareit-web
+    build: server
+    ports:
+      - "9090:9090"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+      - WEB_PORT=9090
+      - POSTGRES_USER=mira
+      - POSTGRES_PASSWORD=password
+      - DB_NAME=shareit
+      - DB_HOST=db
+      - DB_PORT=5432
+
+  db:
+    container_name: shareit-db
+    image: postgres:16.3-alpine
+    volumes:
+      - vol:/var/lib/postgresql/data/
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_DB=shareit
+      - POSTGRES_USER=mira
+      - POSTGRES_PASSWORD=password
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
+
+volumes:
+  vol:
