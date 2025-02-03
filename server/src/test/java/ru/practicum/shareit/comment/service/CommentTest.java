@@ -1,4 +1,4 @@
-package ru.practicum.shareit.comment;
+package ru.practicum.shareit.comment.service;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
