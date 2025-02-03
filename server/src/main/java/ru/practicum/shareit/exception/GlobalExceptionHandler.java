@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.sql.SQLException;
-
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -39,11 +37,5 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(final ValidationException ex) {
         return new ErrorResponse(HttpStatus.BAD_REQUEST.name(), HttpStatus.BAD_REQUEST.value(), ex.getMessage());
-    }
-
-    @ExceptionHandler(SQLException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleSQLException(final SQLException ex) {
-        return new ErrorResponse(HttpStatus.CONFLICT.name(), HttpStatus.CONFLICT.value(), ex.getMessage());
     }
 }

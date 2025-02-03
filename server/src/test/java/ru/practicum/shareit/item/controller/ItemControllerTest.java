@@ -126,14 +126,15 @@ public class ItemControllerTest {
 
     @Test
     public void shouldGetUserItems() throws Exception {
-        when(itemService.getUserItems(anyLong())).thenReturn(List.of(i1));
+        i1.setId(1L);
+        Item i2 = Item.builder().id(2L).name("Item 1").description("description for item 1").available(true).owner(owner).build();
+        when(itemService.getUserItems(anyLong())).thenReturn(List.of(i1, i2));
 
         MockHttpServletResponse response = performGetUserItems(owner.getId());
         List<ItemGetDto> items = mapper.readValue(response.getContentAsString(), new TypeReference<>() {});
 
         assertThat(response.getStatus(), is(200));
-        assertThat(items.size(), is(1));
-        assertThat(items.getFirst().getId(), is(i1.getId()));
+        assertThat(items.size(), is(2));
         verify(itemService, Mockito.times(1)).getUserItems(1L);
     }
 

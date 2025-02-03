@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,7 @@ import ru.practicum.shareit.booking.dto.BookingMappingImpl;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.model.Status;
+import ru.practicum.shareit.exception.BadOperationException;
 import ru.practicum.shareit.exception.ErrorResponse;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.model.Item;
@@ -88,6 +90,26 @@ public class BookingControllerTest {
         BookingGetDto content = mapper.readValue(response.getContentAsString(), BookingGetDto.class);
         assertThat(content.getId(), is(b1.getId()));
         verify(bookingService, Mockito.times(1)).saveBooking(any());
+    }
+
+    @Test
+    public void shouldGetErrorIfItemNotAvailable() throws Exception {
+        when(bookingService.saveBooking(any())).thenThrow(new BadOperationException("Item not available"));
+
+        MockHttpServletResponse response = performCreateBooking(LocalDateTime.now().plusDays(2), LocalDateTime.now().plusDays(16), item.getId(), user.getId());
+        assertThat(response.getStatus(), is(400));
+        ErrorResponse error = mapper.readValue(response.getContentAsString(), ErrorResponse.class);
+        assertThat(error.getError(), is("Item not available"));
+    }
+
+    @Test
+    public void shouldGetErrorIfBookingStartDateAfterEnd() throws Exception {
+        when(bookingService.saveBooking(any())).thenThrow(new ValidationException("Booking start date after end"));
+
+        MockHttpServletResponse response = performCreateBooking(LocalDateTime.now().plusDays(2), LocalDateTime.now().plusDays(16), item.getId(), user.getId());
+        assertThat(response.getStatus(), is(400));
+        ErrorResponse error = mapper.readValue(response.getContentAsString(), ErrorResponse.class);
+        assertThat(error.getError(), is("Booking start date after end"));
     }
 
     public MockHttpServletResponse performCreateBooking(LocalDateTime start, LocalDateTime end, long itemId, long userId) throws Exception {
