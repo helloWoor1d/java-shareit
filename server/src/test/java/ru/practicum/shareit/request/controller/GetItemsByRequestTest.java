@@ -10,11 +10,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.BookingService;
+import ru.practicum.shareit.item.dto.mapper.ItemMapper;
 import ru.practicum.shareit.comment.dto.CommentMappingImpl;
 import ru.practicum.shareit.item.ItemController;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.ItemForRequestDto;
-import ru.practicum.shareit.item.dto.ItemMappingImpl;
+import ru.practicum.shareit.item.dto.mapper.ItemMappingImpl;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.ItemRequestController;
 import ru.practicum.shareit.request.ItemRequestService;
@@ -33,7 +34,7 @@ import static org.mockito.Mockito.when;
 
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @WebMvcTest(controllers = {ItemRequestController.class, ItemController.class})
-@Import({ItemRequestMappingImpl.class, ItemMappingImpl.class, CommentMappingImpl.class})
+@Import({ItemRequestMappingImpl.class, ItemMappingImpl.class, CommentMappingImpl.class, ItemMapper.class})
 public class GetItemsByRequestTest {
     private final MockMvc mvc;
     private final ObjectMapper mapper;
