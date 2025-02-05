@@ -50,8 +50,8 @@ public class ItemRequestMappingTest {
         requestDto = requestMapping.toDto(null, List.of(item1ForRequest, item2ForRequest));
         assertThat(requestDto, is(notNullValue()));
         assertThat(requestDto.getId(), is(nullValue()));
-        assertThat(requestDto.items.size(), is(2));
-        assertThat(requestDto.items, hasItems(item1ForRequest, item2ForRequest));
+        assertThat(requestDto.getItems().size(), is(2));
+        assertThat(requestDto.getItems(), hasItems(item1ForRequest, item2ForRequest));
 
         ItemRequest request = new ItemRequest(1L, "desc", user, LocalDateTime.now());
         requestDto = requestMapping.toDto(request, null);

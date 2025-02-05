@@ -19,8 +19,8 @@ import ru.practicum.shareit.booking.BookingController;
 import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.booking.dto.BookingCreateDto;
 import ru.practicum.shareit.booking.dto.BookingGetDto;
-import ru.practicum.shareit.booking.dto.BookingMapping;
-import ru.practicum.shareit.booking.dto.BookingMappingImpl;
+import ru.practicum.shareit.booking.dto.mapper.BookingMapper;
+import ru.practicum.shareit.booking.dto.mapper.BookingMappingImpl;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.model.Status;
@@ -50,7 +50,7 @@ import static ru.practicum.shareit.util.Header.USER_ID_HEADER;
 
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @WebMvcTest(controllers = BookingController.class)
-@Import(BookingMappingImpl.class)
+@Import({BookingMappingImpl.class, BookingMapper.class})
 public class BookingControllerTest {
     private final MockMvc mvc;
     private final ObjectMapper mapper;
@@ -62,7 +62,7 @@ public class BookingControllerTest {
     @MockBean
     private final ItemService itemService;
 
-    private final BookingMapping bookingMapping;
+    private final BookingMapper bookingMapper;
     private Booking b1;
     private User owner, user;
     private Item item;

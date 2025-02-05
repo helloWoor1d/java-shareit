@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.practicum.shareit.booking.dto.mapper.BookingMappingImpl;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.model.Item;

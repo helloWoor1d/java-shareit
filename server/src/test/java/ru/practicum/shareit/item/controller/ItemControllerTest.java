@@ -15,6 +15,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import ru.practicum.shareit.booking.BookingService;
+import ru.practicum.shareit.item.dto.mapper.ItemMapper;
 import ru.practicum.shareit.comment.dto.CommentCreateDto;
 import ru.practicum.shareit.comment.dto.CommentMapping;
 import ru.practicum.shareit.comment.dto.CommentMappingImpl;
@@ -23,8 +24,7 @@ import ru.practicum.shareit.item.ItemController;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemGetDto;
-import ru.practicum.shareit.item.dto.ItemMapping;
-import ru.practicum.shareit.item.dto.ItemMappingImpl;
+import ru.practicum.shareit.item.dto.mapper.ItemMappingImpl;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.ItemRequestService;
 import ru.practicum.shareit.user.UserService;
@@ -52,7 +52,7 @@ import static ru.practicum.shareit.util.Header.USER_ID_HEADER;
 
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @WebMvcTest(controllers = ItemController.class)
-@Import({ItemMappingImpl.class, CommentMappingImpl.class})
+@Import({ItemMappingImpl.class, CommentMappingImpl.class, ItemMapper.class})
 public class ItemControllerTest {
     private final MockMvc mvc;
     private final ObjectMapper mapper;
@@ -66,7 +66,7 @@ public class ItemControllerTest {
     @MockBean
     private final ItemRequestService requestService;
 
-    private final ItemMapping itemMapping;
+    private final ItemMapper itemMapper;
     private final CommentMapping commentMapping;
 
     private User owner, user;
