@@ -13,7 +13,7 @@ public interface BookingMapping {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", constant = "WAITING")
-    @Mapping(target = "item", source = "dto.itemId")
+    @Mapping(target = "item", source = "dto.itemId", qualifiedByName = "getItemRefById")
     @Mapping(target = "booker", source = "bookerId")
     Booking fromDto(BookingCreateDto dto, Long bookerId);
 

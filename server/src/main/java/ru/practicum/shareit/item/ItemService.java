@@ -3,7 +3,10 @@ package ru.practicum.shareit.item;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.mapstruct.Named;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.comment.repository.CommentRepository;
@@ -17,6 +20,7 @@ import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.model.UserShort;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +36,8 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final CommentRepository commentRepository;
     private final EntityManager entityManager;
+
+    private final YandexStorageService yandexStorageService;
 
     public Item getItem(long itemId, long userId) {
         userService.getUser(userId);
@@ -128,6 +134,7 @@ public class ItemService {
                 .collect(Collectors.groupingBy(item -> item.getRequest().getId()));
     }
 
+    @Named("getItemRefById")
     public Item getItemReference(Long itemId) {
         if (itemId != null) {
             return entityManager.getReference(Item.class, itemId);
@@ -138,5 +145,26 @@ public class ItemService {
 
     private List<Booking> getPastItemBookings(Long userId, Long itemId) {
         return itemRepository.getUserItemBookings(userId, itemId, LocalDateTime.now());
+    }
+
+    public String uploadFile(long itemId, MultipartFile file) throws IOException {
+        Item item = itemRepository.findById(itemId, Item.class).orElseThrow(
+                () -> new NotFoundException("Вещь с id " + itemId + " не была найдена"));
+
+        String imageUrl = yandexStorageService.uploadFile("items", file);
+        item.setImageUrl(imageUrl);
+        itemRepository.save(item);
+        return imageUrl;
+    }
+
+    public Item getItemWithImage(Long itemId) {
+        return itemRepository.findById(itemId, Item.class)
+                .orElseThrow(() -> new NotFoundException("Предмет не найден"));
+    }
+
+    public List<Item> getAllItemsWithImage() {
+        PageRequest page = PageRequest.of(0, 10);
+        log.debug("Получена вся техника вместе с фотографиями");
+        return itemRepository.findAll(page).stream().toList();
     }
 }

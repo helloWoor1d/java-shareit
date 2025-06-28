@@ -2,6 +2,8 @@ package ru.practicum.shareit.user.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -30,4 +32,12 @@ public class User {
     private Long id;
     private String name;
     private String email;
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private UserRole role = UserRole.USER;
+
+    //private String avatar;
+    //private String bio;
 }

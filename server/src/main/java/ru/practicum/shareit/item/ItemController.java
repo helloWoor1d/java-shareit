@@ -2,6 +2,8 @@ package ru.practicum.shareit.item;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.booking.model.BookingShort;
 import ru.practicum.shareit.comment.dto.CommentCreateDto;
@@ -24,10 +27,12 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemForRequestDto;
 import ru.practicum.shareit.item.dto.ItemGetDto;
 import ru.practicum.shareit.item.dto.ItemMapping;
+import ru.practicum.shareit.item.dto.ItemWithImageDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -38,23 +43,24 @@ import static ru.practicum.shareit.util.Header.USER_ID_HEADER;
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
+@Slf4j
 public class ItemController {
     private final ItemService itemService;
     private final ItemMapping itemMapping;
     private final CommentMapping commentMapping;
     private final BookingService bookingService;
 
-    @GetMapping("/{itemId}")
-    public ResponseEntity<ItemGetDto> getItem(@RequestHeader(USER_ID_HEADER) long userId, @PathVariable long itemId) {
-        Item item = itemService.getItem(itemId, userId);
-        return ResponseEntity.ok(itemToDto(item, userId));
-    }
+//    @GetMapping("/{itemId}")
+//    public ResponseEntity<ItemGetDto> getItem(@RequestHeader(USER_ID_HEADER) long userId, @PathVariable long itemId) {
+//        Item item = itemService.getItem(itemId, userId);
+//        return ResponseEntity.ok(itemToDto(item, userId));
+//    }
 
-    @GetMapping
-    public ResponseEntity<List<ItemGetDto>> getUserItems(@RequestHeader(USER_ID_HEADER) long userId) {
-        List<Item> items = itemService.getUserItems(userId);
-        return ResponseEntity.ok(itemsToDto(items));
-    }
+//    @GetMapping
+//    public ResponseEntity<List<ItemGetDto>> getUserItems(@RequestHeader(USER_ID_HEADER) long userId) {
+//        List<Item> items = itemService.getUserItems(userId);
+//        return ResponseEntity.ok(itemsToDto(items));
+//    }
 
     @PostMapping
     public ResponseEntity<ItemDto> createItem(@Validated(ItemDto.Create.class) @RequestBody ItemDto itemDto,
@@ -88,6 +94,32 @@ public class ItemController {
                                                     @Valid @RequestBody CommentCreateDto commentDto) {
         Comment comment = itemService.addComment(commentMapping.fromDto(commentDto, userId, itemId), userId, itemId);
         return ResponseEntity.ok(commentToDto(comment));
+    }
+
+    @PostMapping("/{id}/upload")
+    public ResponseEntity<Map<String, String>> uploadImage(@PathVariable Long id,
+                                                           @RequestParam("file") MultipartFile file) {
+        try {
+            String imageUrl = itemService.uploadFile(id, file);
+            return ResponseEntity.ok(Map.of("imageUrl", imageUrl));
+        } catch (Exception e) {
+            log.warn(Arrays.toString(e.getStackTrace()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Ошибка загрузки"));
+        }
+    }
+
+    @GetMapping("/{itemId}")
+    public ResponseEntity<ItemWithImageDto> getItemWithImage(@PathVariable Long itemId) {
+        return ResponseEntity.ok(
+                itemMapping.toItemWithImageDto(
+                        itemService.getItemWithImage(itemId))
+        );
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ItemWithImageDto>> getAllItemsWithImage() {
+        return ResponseEntity.ok(
+                itemMapping.toItemWithImageDtoList(itemService.getAllItemsWithImage()));
     }
 
     public Map<Long, List<ItemForRequestDto>> getItemsByRequestId(List<Long> requestIds) {

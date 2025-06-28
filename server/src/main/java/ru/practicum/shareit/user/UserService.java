@@ -3,8 +3,10 @@ package ru.practicum.shareit.user;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.user.model.SecurityUser;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.model.UserShort;
 import ru.practicum.shareit.user.repository.UserRepository;
@@ -17,6 +19,8 @@ import java.util.List;
 public class UserService {
     private final UserRepository repository;
     private final EntityManager entityManager;
+
+    private final PasswordEncoder passwordEncoder;
 
     public User getUser(long userId) {
         User user = repository.findById(userId, User.class).orElseThrow(
@@ -32,6 +36,8 @@ public class UserService {
     }
 
     public User createUser(User user) {
+        user.setPassword(
+                passwordEncoder.encode(user.getPassword()));
         User created = repository.save(user);
         log.debug("Создан пользователь с id {}", created.getId());
         return created;
@@ -39,6 +45,9 @@ public class UserService {
 
     public User updateUser(User user) {
         User savedUser = getUser(user.getId());
+        if (user.getPassword() == null || user.getPassword().isBlank()) {
+            user.setPassword(savedUser.getPassword());
+        }
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(savedUser.getName());
         }
@@ -74,5 +83,12 @@ public class UserService {
         } else {
             throw new NotFoundException("Id пользователя не может быть пустым");
         }
+     }
+
+     public SecurityUser getUserPrivate(String email) {
+        log.debug("Запрос на получение пользователя с email {} от сервиса авторизации", email);
+        return repository.findByEmail(email).orElseThrow(
+                () -> new NotFoundException("Пользователь не найден")
+        );
      }
 }

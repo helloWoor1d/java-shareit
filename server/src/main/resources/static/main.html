@@ -1,0 +1,152 @@
+    <style> 
+        .about-store {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .store-title {
+            text-align: center;
+            font-size: 2.2rem;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        .store-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .store-image {
+            flex: 1;
+            min-width: 300px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .store-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.3s;
+        }
+        
+        .store-image:hover img {
+            transform: scale(1.03);
+        }
+        
+        .store-info {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .store-description {
+            margin-bottom: 20px;
+            line-height: 1.7;
+            color: #555;
+        }
+        
+        .advantages {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+        
+        .advantage-card {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+        }
+        
+        .advantage-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .advantage-icon {
+            font-size: 2.5rem;
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+        
+        .advantage-title {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        @media (max-width: 768px) {
+            .store-title {
+                font-size: 1.8rem;
+            }
+            
+            .store-content {
+                flex-direction: column;
+            }
+            
+            .store-image {
+                min-width: 100%;
+            }
+        }
+    </style>
+    <div class="about-store">
+        <h1 class="store-title">Добро пожаловать в ShareIt!</h1>
+        
+        <div class="store-content">
+            <div class="store-image">
+                <img src="image/ShareIt_2.jpg" alt="ShareIt">
+            </div>
+
+            <div class="store-info">
+                <p class="store-description" style="text-align: justify;">
+                    Добро пожаловать в <strong>ShareIT</strong> — онлайн-платформу для
+                    аренды техники от частных лиц и компаний. Мы объединяем тех, кто хочет
+                    сдать технику в аренду, и тех, кому она нужна на время — быстро, удобно
+                    и безопасно.
+                </p>
+                <p class="store-description" style="text-align: justify;">
+                    Вам нужен проектор для презентации, фотоаппарат на выходные или ноутбук на
+                    время отпуска? Теперь не нужно покупать — просто арендуйте на нужный срок.
+                </p>
+                <p class="store-description" style="text-align: justify;">
+                    Мы искренне ценим каждого клиента и делаем всё, чтобы процесс аренды был
+                    простым, прозрачным и комфортным. В ShareIT вы всегда можете рассчитывать
+                    на поддержку, удобные условия и безопасность — ведь забота о вас для нас
+                    на первом месте.
+                </p>
+            </div>
+        </div>
+        
+        <div class="advantages">
+            <div class="advantage-card">
+                <div class="advantage-icon">🌿</div>
+                <h3 class="advantage-title">Забота о природе</h3>
+                <p>Разумное потребление и повторное использование техники помогают уменьшить нагрузку на окружающую среду.</p>
+            </div>
+
+            <div class="advantage-card">
+                <div class="advantage-icon">⚙</div>
+                <h3 class="advantage-title">Техника на любой случай</h3>
+                <p>От фотоаппаратов и гаджетов до инструментов и профессионального оборудования</p>
+            </div>
+
+            <div class="advantage-card">
+                <div class="advantage-icon">💸</div>
+                <h3 class="advantage-title">Экономия</h3>
+                <p>Не нужно покупать дорогие инструменты — арендуйте их у соседей.</p>
+            </div>
+
+            <div class="advantage-card">
+                <div class="advantage-icon">🔒</div>
+                <h3 class="advantage-title">Безопасность и доверие</h3>
+                <p>Мы обеспечиваем прозрачные условия и надежную защиту данных для спокойствия каждого пользователя.</p>
+            </div>
+        </div>
+    </div>

@@ -15,11 +15,13 @@ public interface ItemMapping {
     @Mapping(target = "requestId", source = "item.request.id")
     ItemDto toDto(Item item);
 
+    @Mapping(target = "imageUrl", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "owner", source = "userId")
     @Mapping(target = "request", source = "itemDto.requestId")
     Item fromDto(ItemDto itemDto, long userId);
 
+    @Mapping(target = "imageUrl", ignore = true)
     @Mapping(target = "id", source = "itemId")
     @Mapping(target = "owner", source = "userId")
     @Mapping(target = "request", source = "itemDto.requestId")
@@ -33,4 +35,8 @@ public interface ItemMapping {
 
     @Mapping(target = "ownerId", source = "item.owner.id")
     ItemForRequestDto toRequestDto(Item item);
+
+    ItemWithImageDto toItemWithImageDto(Item item);
+
+    List<ItemWithImageDto> toItemWithImageDtoList(List<Item> items);
 }
