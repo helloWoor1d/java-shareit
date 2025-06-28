@@ -16,8 +16,10 @@
 
 	<name>ShareIt</name>
 	<modules>
-		<module>server</module>
+		<module>main-service</module>
 		<module>gateway</module>
+		<module>auth-service</module>
+		<module>log-service</module>
 	</modules>
 
 	<properties>

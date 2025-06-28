@@ -1,0 +1,52 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-security-logs
+      author: mira
+      changes:
+        - createTable:
+            tableName: security_logs
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: service
+                  type: VARCHAR(150)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: level
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: type
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: event
+                  type: VARCHAR(200)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: timestamp
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+              - column:
+                  name: user_ip
+                  type: VARCHAR(100)
+              - column:
+                  name: auth_method
+                  type: VARCHAR(200)
+              - column:
+                  name: message
+                  type: VARCHAR(512)

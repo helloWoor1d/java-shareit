@@ -1,0 +1,39 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-system-logs
+      author: mira
+      changes:
+        - createTable:
+            tableName: system_logs
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: service
+                  type: VARCHAR(150)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: level
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: timestamp
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+              - column:
+                  name: exception
+                  type: text
+              - column:
+                  name: stack_trace
+                  type: text
+              - column:
+                  name: message
+                  type: VARCHAR(512)
