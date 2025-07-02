@@ -1,4 +1,4 @@
-package ru.practicum;
+package ru.practicum.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

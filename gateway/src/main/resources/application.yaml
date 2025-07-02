@@ -1,0 +1,44 @@
+shareit:
+  main:
+    service:
+      url: ${SHAREIT_MAIN_SERVICE_URL:http://localhost:9090}
+  auth:
+    service:
+      url: ${SHAREIT_AUTH_SERVICE_URL:http://localhost:9093}
+
+server:
+  port: ${SERVER_PORT:9091}
+
+spring:
+  data:
+    redis:
+      database: ${REDIS_DATABASE:0}
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:password }
+      connect-timeout: ${REDIS_CONNECT_TIMEOUT:60000}
+
+  cloud:
+    gateway:
+      routes:
+        - id: main
+          uri: ${shareit.main.service.url}
+          predicates:
+            - Path=/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.burst-capacity: 50
+                redis-rate-limiter.replenish-rate: 10
+                redis-rate-limiter.requested-tokens: 1
+
+        - id: auth
+          uri: ${shareit.auth.service.url}
+          predicates:
+            - Path=/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.burst-capacity: 50
+                redis-rate-limiter.replenish-rate: 10
+                redis-rate-limiter.requested-tokens: 1
