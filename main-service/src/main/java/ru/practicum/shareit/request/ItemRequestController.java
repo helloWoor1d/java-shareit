@@ -34,14 +34,14 @@ public class ItemRequestController {
     private final ItemRequestService itemRequestService;
 
     @PostMapping
-    public ResponseEntity<ItemRequestGetDto> createRequest(@RequestHeader(USER_ID_HEADER) long userId,
+    public ResponseEntity<ItemRequestGetDto> createRequest(@RequestHeader(USER_ID_HEADER) Long userId,
                                                            @Valid @RequestBody ItemRequestCreateDto requestDto) {
         ItemRequest request = requestService.createRequest(itemRequestMapping.fromDto(requestDto, userId), userId);
         return ResponseEntity.ok(itemRequestMapping.toDto(request));
     }
 
     @GetMapping
-    public ResponseEntity<List<ItemRequestGetDto>> getUserRequests(@RequestHeader(USER_ID_HEADER) long userId) {
+    public ResponseEntity<List<ItemRequestGetDto>> getUserRequests(@RequestHeader(USER_ID_HEADER) Long userId) {
         List<ItemRequest> userRequests = requestService.getUserRequests(userId);
         Map<Long, List<ItemForRequestDto>> responses = itemController
                 .getItemsByRequestId(userRequests.stream()
@@ -55,9 +55,9 @@ public class ItemRequestController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<ItemRequestGetDto>> getAllRequests(@RequestHeader(USER_ID_HEADER) long userId,
-                                                                  @RequestParam(name = "from", defaultValue = "0") int from,
-                                                                  @RequestParam(name = "size", defaultValue = "10") int size) {
+    public ResponseEntity<List<ItemRequestGetDto>> getAllRequests(@RequestHeader(USER_ID_HEADER) Long userId,
+                                                                  @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                                                  @RequestParam(name = "size", defaultValue = "10") Integer size) {
         List<ItemRequest> requests = requestService.getAllRequests(userId, from, size);
         return ResponseEntity.ok(requests.stream()
                 .map(itemRequestMapping::toDto)
@@ -65,8 +65,8 @@ public class ItemRequestController {
     }
 
     @GetMapping("/{requestId}")
-    public ResponseEntity<ItemRequestGetDto> getRequest(@RequestHeader(USER_ID_HEADER) long userId,
-                                                        @PathVariable long requestId) {
+    public ResponseEntity<ItemRequestGetDto> getRequest(@RequestHeader(USER_ID_HEADER) Long userId,
+                                                        @PathVariable Long requestId) {
         ItemRequest request = itemRequestService.getRequest(requestId, userId);
         Map<Long, List<ItemForRequestDto>> responses = itemController.getItemsByRequestId(List.of(requestId));
         return ResponseEntity.ok(itemRequestMapping.toDto(request, responses.get(requestId)));

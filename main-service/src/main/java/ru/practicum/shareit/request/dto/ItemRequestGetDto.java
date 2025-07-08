@@ -16,5 +16,5 @@ public class ItemRequestGetDto {
 
     private LocalDateTime created;
 
-    List<ItemForRequestDto> items;
+    private List<ItemForRequestDto> items;
 }
