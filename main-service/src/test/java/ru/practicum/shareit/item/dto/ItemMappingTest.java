@@ -7,7 +7,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.comment.dto.CommentGetDto;
-import ru.practicum.shareit.item.dto.mapper.ItemMappingImpl;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.ItemRequestService;
 import ru.practicum.shareit.request.model.ItemRequest;

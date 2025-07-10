@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.booking.dto.BookingCreateDto;
 import ru.practicum.shareit.booking.dto.BookingGetDto;
-import ru.practicum.shareit.booking.dto.mapper.BookingMapper;
+import ru.practicum.shareit.booking.dto.BookingMappingImpl;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.State;
 
@@ -27,13 +27,13 @@ import static ru.practicum.shareit.util.Header.USER_ID_HEADER;
 @RequiredArgsConstructor
 public class BookingController {
     private final BookingService bookingService;
-    private final BookingMapper bookingMapper;
+    private final BookingMappingImpl bookingMapping;
 
     @PostMapping
     public ResponseEntity<BookingGetDto> createBooking(@Valid @RequestBody BookingCreateDto bookingDto,
                                                        @RequestHeader(USER_ID_HEADER) Long userId) {
-        Booking booking = bookingMapper.fromDto(bookingDto, userId);
-        return ResponseEntity.ok(bookingMapper.toDto(
+        Booking booking = bookingMapping.fromDto(bookingDto, userId);
+        return ResponseEntity.ok(bookingMapping.toDto(
                 bookingService.saveBooking(booking)));
     }
 
@@ -41,14 +41,14 @@ public class BookingController {
     public ResponseEntity<BookingGetDto> approveBooking(@PathVariable Long bookingId,
                                                         @RequestParam Boolean approved,
                                                         @RequestHeader(USER_ID_HEADER) Long userId) {
-        return ResponseEntity.ok(bookingMapper.toDto(
+        return ResponseEntity.ok(bookingMapping.toDto(
                 bookingService.approveBooking(bookingId, approved, userId)));
     }
 
     @GetMapping("/{bookingId}")
     public ResponseEntity<BookingGetDto> getBooking(@PathVariable Long bookingId,
                                                     @RequestHeader(USER_ID_HEADER) Long userId) {
-        return ResponseEntity.ok(bookingMapper.toDto(bookingService.getBooking(bookingId, userId)));
+        return ResponseEntity.ok(bookingMapping.toDto(bookingService.getBooking(bookingId, userId)));
     }
 
     @GetMapping
@@ -56,7 +56,7 @@ public class BookingController {
                                                                @RequestParam(defaultValue = "ALL") String state) {
         try {
             List<Booking> userBookings = bookingService.getUserBookings(userId, State.valueOf(state.toUpperCase()));
-            return ResponseEntity.ok(bookingMapper.listBookingsToDto(userBookings));
+            return ResponseEntity.ok(bookingMapping.listBookingsToDto(userBookings));
         } catch (IllegalArgumentException ex) {
             throw new IllegalArgumentException("Unknown state: " + state);
         }
@@ -67,7 +67,7 @@ public class BookingController {
                                                                 @RequestParam(defaultValue = "ALL") String state) {
         try {
             List<Booking> ownerBookings = bookingService.getOwnerBookings(userId, State.valueOf(state.toUpperCase()));
-            return ResponseEntity.ok(bookingMapper.listBookingsToDto(ownerBookings));
+            return ResponseEntity.ok(bookingMapping.listBookingsToDto(ownerBookings));
         } catch (IllegalArgumentException ex) {
             throw new IllegalArgumentException("Unknown state: " + state);
         }
