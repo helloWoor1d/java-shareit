@@ -1,40 +1,73 @@
-version: '3.8'
-
 services:
   gateway:
-    container_name: shareit-gateway
+    container_name: gateway
     build: gateway
     ports:
-      - "8080:8080"
+      - "9091:9091"
     depends_on:
-      - server
-    environment:
-      - SPRING_PROFILES_ACTIVE=default
-      - WEB_PORT=8080
-      - SERVER_URL=http://server:9090
-
-  server:
-    container_name: shareit-web
-    build: server
-    ports:
-      - "9090:9090"
-    depends_on:
-      db:
+      main-service:
+        condition: service_started
+      auth-service:
+        condition: service_started
+      redis:
         condition: service_healthy
     environment:
-      - SPRING_PROFILES_ACTIVE=default
-      - WEB_PORT=9090
-      - POSTGRES_USER=mira
-      - POSTGRES_PASSWORD=password
-      - DB_NAME=shareit
-      - DB_HOST=db
-      - DB_PORT=5432
+      - SERVER_PORT=9091
+      - SHAREIT_MAIN_SERVICE_URL=http://main-service:9099
+      - SHAREIT_AUTH_SERVICE_URL=http://auth-service:9093
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=password
 
-  db:
-    container_name: shareit-db
+  redis:
+    container_name: redis-server
+    image: redis:7-alpine
+    command: [ "redis-server", "--requirepass", "password" ]
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis-data:/data
+    environment:
+      REDIS_PASSWORD: password
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  main-service:
+    container_name: main-service
+    build: main-service
+    ports:
+      - "9099:9099"
+    depends_on:
+      main-db:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+      log-service:
+        condition: service_started
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+      - SERVER_PORT=9099
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://main-db:5432/shareit
+      - SPRING_DATASOURCE_USERNAME=mira
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SHAREIT_AUTH_SERVICE_URL=http://auth-service:9093
+      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      - AWS_SECRET_KEY=${AWS_SECRET_KEY}
+      - AWS_BUCKET=${AWS_BUCKET}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_ENDPOINT=${AWS_ENDPOINT}
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9098
+
+  main-db:
+    container_name: main-db
     image: postgres:16.3-alpine
     volumes:
-      - vol:/var/lib/postgresql/data/
+      - shareit_main_service_data:/var/lib/postgresql/data/
     ports:
       - "5433:5432"
     environment:
@@ -45,7 +78,78 @@ services:
       test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
       timeout: 5s
       interval: 5s
-      retries: 10
+      retries: 3
+
+  auth-service:
+    container_name: auth-service
+    build: auth-service
+    ports:
+      - "9093:9093"
+    depends_on:
+      log-service:
+        condition: service_started
+      kafka:
+        condition: service_healthy
+    environment:
+      - SERVER_PORT=9093
+      - SHAREIT_SERVER_URL=http://main-service:9099
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9098
+
+  log-service:
+    container_name: log-service
+    build: log-service/logging-server
+    ports:
+      - "9097:9097"
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9098
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://log-db:5432/shareit-logs
+      - SPRING_DATASOURCE_USERNAME=mira
+      - SPRING_DATASOURCE_PASSWORD=password
+
+  log-db:
+    container_name: log-db
+    image: postgres:16.3-alpine
+    volumes:
+      - shareit_log_service_data:/var/lib/postgresql/data/
+    ports:
+      - "5434:5432"
+    environment:
+      - POSTGRES_DB=shareit-logs
+      - POSTGRES_USER=mira
+      - POSTGRES_PASSWORD=password
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 3
+
+  kafka:
+    container_name: kafka
+    image: 'bitnami/kafka:latest'
+    ports:
+      - "9098:9098"
+    environment:
+      # KRaft settings
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9099
+      # Listeners
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9098,CONTROLLER://:9099
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9098
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+    healthcheck:
+      test: ["CMD", "kafka-topics.sh", "--bootstrap-server", "localhost:9098", "--list"]
+      start_period: 15s
+      interval: 5s
+      timeout: 10s
+      retries: 3
 
 volumes:
-  vol:
+  redis-data:
+  shareit_main_service_data:
+  shareit_log_service_data:

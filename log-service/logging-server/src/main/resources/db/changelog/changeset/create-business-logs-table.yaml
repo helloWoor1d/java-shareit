@@ -1,0 +1,51 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-business-logs
+      author: mira
+      changes:
+        - createTable:
+            tableName: business_logs
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: service
+                  type: VARCHAR(150)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: level
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: type
+                  type: VARCHAR(100)
+              - column:
+                  name: event
+                  type: VARCHAR(200)
+              - column:
+                  name: timestamp
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+              - column:
+                  name: entity_type
+                  type: VARCHAR(150)
+              - column:
+                  name: entity_id
+                  type: BIGINT
+              - column:
+                  name: action
+                  type: VARCHAR(200)
+              - column:
+                  name: message
+                  type: VARCHAR(512)
