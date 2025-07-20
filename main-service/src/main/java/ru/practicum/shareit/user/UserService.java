@@ -5,12 +5,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.item.YandexStorageService;
 import ru.practicum.shareit.user.model.SecurityUser;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.model.UserShort;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -21,6 +24,7 @@ public class UserService {
     private final EntityManager entityManager;
 
     private final PasswordEncoder passwordEncoder;
+    private final YandexStorageService yandexStorageService;
 
     public User getUser(long userId) {
         User user = repository.findById(userId, User.class).orElseThrow(
@@ -56,6 +60,18 @@ public class UserService {
         }
         log.debug("Изменен пользователь с id {}", user.getId());
         return repository.save(user);
+    }
+
+    public String uploadUserAvatar(Long userId, MultipartFile file) throws IOException {
+        User user = repository.findById(userId).orElseThrow(
+                () -> new NotFoundException("Пользователь с id " + userId + " не найден"));
+
+        String avatarUrl = yandexStorageService.uploadUserAvatar(userId, file);
+        user.setAvatarUrl(avatarUrl);
+        repository.save(user);
+
+        log.debug("Добавлена фотография пользователя с id {}", userId);
+        return avatarUrl;
     }
 
     public void deleteUser(long userId) {

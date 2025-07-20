@@ -19,7 +19,7 @@ import java.util.UUID;
 @Configuration
 public class SecurityConfigClient {
     @Bean
-    public RegisteredClientRepository registeredClientRepository (PasswordEncoder passwordEncoder) {
+    public RegisteredClientRepository registeredClientRepository(PasswordEncoder passwordEncoder) {
         RegisteredClient client = RegisteredClient
                 .withId(UUID.randomUUID().toString())
                 .clientId("ShareIt")

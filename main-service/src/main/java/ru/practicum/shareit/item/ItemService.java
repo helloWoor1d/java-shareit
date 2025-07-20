@@ -147,11 +147,11 @@ public class ItemService {
         return itemRepository.getUserItemBookings(userId, itemId, LocalDateTime.now());
     }
 
-    public String uploadFile(long itemId, MultipartFile file) throws IOException {
+    public String uploadFile(long itemId, MultipartFile file) throws IOException { // toDo: при изменении фотографии, старая удаляется
         Item item = itemRepository.findById(itemId, Item.class).orElseThrow(
                 () -> new NotFoundException("Вещь с id " + itemId + " не была найдена"));
 
-        String imageUrl = yandexStorageService.uploadFile("items", file);
+        String imageUrl = yandexStorageService.uploadItemImage(itemId, file);
         item.setImageUrl(imageUrl);
         itemRepository.save(item);
         return imageUrl;
