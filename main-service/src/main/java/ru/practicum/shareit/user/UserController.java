@@ -1,14 +1,18 @@
 package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapping;
 import ru.practicum.shareit.user.model.User;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -44,6 +48,17 @@ public class UserController {
                                               @Validated(UserDto.Update.class) @RequestBody UserDto userDto) {
         User user = userService.updateUser(userMapping.fromDto(userDto, userId));
         return ResponseEntity.ok(userMapping.toDto(user));
+    }
+
+    @PostMapping("/{id}/upload")
+    public ResponseEntity<Map<String, String>> uploadUserAvatar(@PathVariable Long id,
+                                                   @RequestParam("file") MultipartFile file) {
+        try {
+            String avatarUrl = userService.uploadUserAvatar(id, file);
+            return ResponseEntity.ok(Map.of("imageUrl", avatarUrl));
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Ошибка загрузки"));
+        }
     }
 
     @DeleteMapping("/{userId}")

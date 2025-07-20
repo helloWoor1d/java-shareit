@@ -50,5 +50,5 @@ public class Item {
     @ToString.Exclude
     private ItemRequest request;
 
-    String imageUrl;
+    private String imageUrl;
 }

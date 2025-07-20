@@ -38,6 +38,5 @@ public class User {
     @Builder.Default
     private UserRole role = UserRole.USER;
 
-    //private String avatar;
-    //private String bio;
+    private String avatarUrl;
 }

@@ -18,9 +18,12 @@ public class YandexStorageService {
     @Value("${aws.bucket}")
     private String bucket;
 
-    public String uploadFile(String folder, MultipartFile file) throws IOException {
-        String filename = file.getOriginalFilename();
-        String key = (folder != null ? folder + "/" : "") + filename;
+    private static final String ITEM_IMAGE_KEY = "items/";
+    private static final String USER_AVATAR_KEY = "user-avatars/";
+
+    public String uploadItemImage(long itemId, MultipartFile file) throws IOException {
+        String fileName = itemId + "_" + file.getOriginalFilename();
+        String key = ITEM_IMAGE_KEY + fileName;
 
         PutObjectRequest objRequest = PutObjectRequest.builder()
                 .bucket(bucket)
@@ -28,7 +31,20 @@ public class YandexStorageService {
                 .acl("public-read")
                 .contentType(file.getContentType())
                 .build();
+        s3Client.putObject(objRequest, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
+        return String.format("https://%s.storage.yandexcloud.net/%s", bucket, key);
+    }
 
+    public String uploadUserAvatar(long userId, MultipartFile file) throws IOException {
+        String fileName = userId + "_" + file.getOriginalFilename();
+        String key = USER_AVATAR_KEY + fileName;
+
+        PutObjectRequest objRequest = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .acl("public-read")
+                .contentType(file.getContentType())
+                .build();
         s3Client.putObject(objRequest, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
         return String.format("https://%s.storage.yandexcloud.net/%s", bucket, key);
     }
