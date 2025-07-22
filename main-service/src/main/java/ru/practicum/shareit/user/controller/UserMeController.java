@@ -1,4 +1,4 @@
-package ru.practicum.shareit.user.repository;
+package ru.practicum.shareit.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -8,8 +8,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.user.UserService;
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserGetDto;
 import ru.practicum.shareit.user.dto.UserMapping;
+import ru.practicum.shareit.user.model.User;
 
 @RestController
 @RequestMapping("/users/me")
@@ -19,10 +20,11 @@ public class UserMeController {
     private final UserMapping userMapping;
 
     @GetMapping
-    public ResponseEntity<UserDto> getUser(Authentication authentication) {
+    public ResponseEntity<UserGetDto> getCurrentUser(Authentication authentication) {
         Jwt jwt = (Jwt) authentication.getPrincipal();
         long userId = Long.parseLong(jwt.getSubject());
-        return ResponseEntity.ok(userMapping.toDto(
-                userService.getUser(userId)));
+        User user = userService.getUser(userId);
+
+        return ResponseEntity.ok().body(userMapping.toGetDto(user));
     }
 }

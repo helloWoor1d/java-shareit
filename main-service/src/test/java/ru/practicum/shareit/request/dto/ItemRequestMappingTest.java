@@ -32,8 +32,8 @@ public class ItemRequestMappingTest {
 
     @BeforeEach
     public void init() {
-        User owner = new User(2L, "owner", "owner@email.com", "1234", UserRole.USER);
-        user = new User(3L, "user", "user@email.com", "1234", UserRole.USER);
+        User owner = new User(2L, "owner", "owner@email.com", "1234", UserRole.USER, null);
+        user = new User(3L, "user", "user@email.com", "1234", UserRole.USER, null);
         item1 = new Item(5L, "item 1 name", "desc", true, owner, null,null);
         item2 = new Item(6L, "item 2 name", "desc", true, owner, null, null);
     }
