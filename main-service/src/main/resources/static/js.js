@@ -132,7 +132,7 @@ $(document).ready(function() {
                 } else {
                     console.error("❌ Функция startOAuthLogin не найдена");
                 }
-                return; // важный момент — не продолжаем показывать профиль без токена
+                return;
             }
 
             $.ajax({

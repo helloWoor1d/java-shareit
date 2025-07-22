@@ -43,8 +43,8 @@ public class GetLastAndNextBookingTest {
 
     @BeforeEach
     public void setUp() {
-        User owner = new User(null, "user1", "user1@mail.com", "1234", UserRole.USER);
-        User booker = new User(null, "booker1", "booker1@mail.com", "1234", UserRole.USER);
+        User owner = new User(null, "user1", "user1@mail.com", "1234", UserRole.USER, null);
+        User booker = new User(null, "booker1", "booker1@mail.com", "1234", UserRole.USER, null);
         userRepository.saveAll(List.of(owner, booker));
 
         itemWithBookings = Item.builder()

@@ -8,9 +8,15 @@ import ru.practicum.shareit.user.model.User;
 public interface UserMapping {
     UserDto toDto(User user);
 
+    @Mapping(target = "role", ignore = true)
+    @Mapping(target = "avatarUrl", ignore = true)
     @Mapping(target = "id", ignore = true)
     User fromDto(UserDto dto);
 
+    @Mapping(target = "role", ignore = true)
+    @Mapping(target = "avatarUrl", ignore = true)
     @Mapping(target = "id", source = "userId")
     User fromDto(UserDto dto, long userId);
+
+    UserGetDto toGetDto(User user);
 }

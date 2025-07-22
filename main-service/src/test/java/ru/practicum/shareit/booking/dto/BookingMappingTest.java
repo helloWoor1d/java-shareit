@@ -32,7 +32,7 @@ public class BookingMappingTest {
 
     @BeforeEach
     public void init() {
-        user = new User(3L, "name", "email@email.com", "12345", UserRole.USER);
+        user = new User(3L, "name", "email@email.com", "12345", UserRole.USER, null);
     }
 
     @Test

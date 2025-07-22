@@ -16,7 +16,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import ru.practicum.shareit.config.TestSecurityConfig;
 import ru.practicum.shareit.exception.ErrorResponse;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.user.UserController;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapping;
