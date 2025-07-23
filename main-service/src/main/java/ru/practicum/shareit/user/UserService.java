@@ -7,7 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.item.YandexStorageService;
+import ru.practicum.shareit.s3.YandexStorageService;
 import ru.practicum.shareit.user.model.SecurityUser;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.model.UserShort;
@@ -66,10 +66,13 @@ public class UserService {
         User user = repository.findById(userId).orElseThrow(
                 () -> new NotFoundException("Пользователь с id " + userId + " не найден"));
 
+        if (!user.getAvatarUrl().isBlank()) {
+           yandexStorageService.deleteImage(user.getAvatarUrl(), YandexStorageService.USER_AVATAR_KEY);
+        }
+
         String avatarUrl = yandexStorageService.uploadUserAvatar(userId, file);
         user.setAvatarUrl(avatarUrl);
         repository.save(user);
-
         log.debug("Добавлена фотография пользователя с id {}", userId);
         return avatarUrl;
     }

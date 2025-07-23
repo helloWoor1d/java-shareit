@@ -16,6 +16,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.ItemShort;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.ItemRequestService;
+import ru.practicum.shareit.s3.YandexStorageService;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.model.UserShort;
@@ -147,9 +148,13 @@ public class ItemService {
         return itemRepository.getUserItemBookings(userId, itemId, LocalDateTime.now());
     }
 
-    public String uploadFile(long itemId, MultipartFile file) throws IOException { // toDo: при изменении фотографии, старая удаляется
+    public String uploadItemImage(long itemId, MultipartFile file) throws IOException {
         Item item = itemRepository.findById(itemId, Item.class).orElseThrow(
                 () -> new NotFoundException("Вещь с id " + itemId + " не была найдена"));
+
+        if (!item.getImageUrl().isBlank()) {
+            yandexStorageService.deleteImage(item.getImageUrl(), YandexStorageService.ITEM_IMAGE_KEY);
+        }
 
         String imageUrl = yandexStorageService.uploadItemImage(itemId, file);
         item.setImageUrl(imageUrl);
