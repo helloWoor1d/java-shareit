@@ -61,12 +61,13 @@ public class UserController {
 
     @PostMapping("/{id}/upload")
     public ResponseEntity<Map<String, String>> uploadUserAvatar(@PathVariable Long id,
-                                                   @RequestParam("file") MultipartFile file) {
+                                                                @RequestParam("file") MultipartFile file) {
         try {
             String avatarUrl = userService.uploadUserAvatar(id, file);
             return ResponseEntity.ok(Map.of("imageUrl", avatarUrl));
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Ошибка загрузки"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Ошибка загрузки"));
         }
     }
 

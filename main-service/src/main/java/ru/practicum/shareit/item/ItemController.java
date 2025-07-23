@@ -114,7 +114,7 @@ public class ItemController {
     public ResponseEntity<Map<String, String>> uploadImage(@PathVariable Long id,
                                                            @RequestParam("file") MultipartFile file) {
         try {
-            String imageUrl = itemService.uploadFile(id, file);
+            String imageUrl = itemService.uploadItemImage(id, file);
             return ResponseEntity.ok(Map.of("imageUrl", imageUrl));
         } catch (Exception e) {
             log.warn(Arrays.toString(e.getStackTrace()));

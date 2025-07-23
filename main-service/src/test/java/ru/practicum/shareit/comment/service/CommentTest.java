@@ -13,7 +13,7 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.exception.BadOperationException;
 import ru.practicum.shareit.item.ItemService;
-import ru.practicum.shareit.item.YandexStorageService;
+import ru.practicum.shareit.s3.YandexStorageService;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.User;
