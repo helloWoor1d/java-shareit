@@ -20,7 +20,8 @@
 		<module>gateway</module>
 		<module>auth-service</module>
 		<module>log-service</module>
-	</modules>
+        <module>eureka-server</module>
+    </modules>
 
 	<properties>
 		<java.version>21</java.version>
