@@ -12,12 +12,16 @@ import ru.practicum.user.model.User;
 @RequiredArgsConstructor
 @Component
 public class Client {
-    @Value("${shareit-server.url}")
-    private String baseUrl;
-    private final WebClient webClient = WebClient.builder().baseUrl("http://localhost:9090").build();
+    private final WebClient.Builder webClient;
+
+    @Value("${shareit.main-server.url}")
+    private String authServerUrl;
 
     public User getUserDetails(String email) {
-        User response = webClient.get()
+        User response = webClient
+                .baseUrl(authServerUrl)
+                .build()
+                .get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/users/private")
                         .queryParam("email", email)

@@ -13,9 +13,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
@@ -103,14 +100,9 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserDetailsService customUserDetailsService() {
-        return new ClientUserDetailsService(new Client());
+    public UserDetailsService customUserDetailsService(Client client) {
+        return new ClientUserDetailsService(client);
     }
-
-//    @Bean
-//    public OAuth2AuthorizedClientService authorizedClientService(ClientRegistrationRepository clients) {
-//        return new InMemoryOAuth2AuthorizedClientService(clients);
-//    }
 
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {

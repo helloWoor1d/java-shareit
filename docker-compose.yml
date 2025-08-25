@@ -55,13 +55,13 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://main-db:5432/shareit
       - SPRING_DATASOURCE_USERNAME=mira
       - SPRING_DATASOURCE_PASSWORD=password
-      - SHAREIT_AUTH_SERVICE_URL=http://auth-service:9093
       - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
       - AWS_SECRET_KEY=${AWS_SECRET_KEY}
       - AWS_BUCKET=${AWS_BUCKET}
       - AWS_REGION=${AWS_REGION}
       - AWS_ENDPOINT=${AWS_ENDPOINT}
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9098
+      - EUREKA_SERVER_URL=http://eureka-server:8761/eureka/
 
   main-db:
     container_name: main-db
@@ -90,10 +90,12 @@ services:
         condition: service_started
       kafka:
         condition: service_healthy
+      eureka-server:
+        condition: service_started
     environment:
       - SERVER_PORT=9093
-      - SHAREIT_SERVER_URL=http://main-service:9099
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9098
+      - EUREKA_SERVER_URL=http://eureka-server:8761/eureka/
 
   log-service:
     container_name: log-service
@@ -148,6 +150,12 @@ services:
       interval: 5s
       timeout: 10s
       retries: 3
+
+  eureka-server:
+    container_name: eureka-server
+    build: eureka-server
+    ports:
+      - "8761:8761"
 
 volumes:
   redis-data:
