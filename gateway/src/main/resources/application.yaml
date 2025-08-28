@@ -1,21 +1,23 @@
 shareit:
   main:
     service:
-      url: ${SHAREIT_MAIN_SERVICE_URL:http://localhost:9090}
+      url: lb://shareit-main
   auth:
     service:
-      url: ${SHAREIT_AUTH_SERVICE_URL:http://localhost:9093}
+      url: lb://shareit-auth
 
 server:
   port: ${SERVER_PORT:9091}
 
 spring:
+  application:
+    name: shareit-gateway
   data:
     redis:
       database: ${REDIS_DATABASE:0}
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
-      password: ${REDIS_PASSWORD:password }
+      password: ${REDIS_PASSWORD:password}
       connect-timeout: ${REDIS_CONNECT_TIMEOUT:60000}
 
   cloud:
@@ -35,10 +37,23 @@ spring:
         - id: auth
           uri: ${shareit.auth.service.url}
           predicates:
-            - Path=/**
+            - Path=/oauth2/**, /login/**, /token/**, http://localhost:9090/**
+          #ToDo: емае, с этим костылем надо что-то сделать
           filters:
+            - StripPrefix=2
             - name: RequestRateLimiter
               args:
                 redis-rate-limiter.burst-capacity: 50
                 redis-rate-limiter.replenish-rate: 10
                 redis-rate-limiter.requested-tokens: 1
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}
+  instance:
+    prefer-ip-address: true
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
